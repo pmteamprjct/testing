@@ -1,5 +1,6 @@
-#include "Character.h"
 #include "extern.h"
+#include "Character.h"
+#include "Grid.h"
 
 #ifndef CHARA_POINT_SIZE
 #define CHARA_POINT_SIZE 6.0f

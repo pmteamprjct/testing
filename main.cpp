@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "Zombie.h"
 #include "Grid.h"
 #include <time.h>
 #include <vector>
@@ -27,17 +28,13 @@ int debugger_int = 0;
 #define PATH_POINT_SIZE 3.0f
 #endif
 
-#ifndef ZOMBIE_SPEED
-#define ZOMBIE_SPEED 4
-#endif
-
 
 
 int zombie_move_count = 0;
 int score;
 
 Player P1(GRID_WIDTH/2, GRID_HEIGHT/2, 1, 0, 0);
-vector<Character> Zombies;
+vector<Zombie> Zombies;
 Grid Territory(0.5, 0, 0.5, 1,GRID_POINT_SIZE);
 Grid Path(0.5, 0, 0.5, 1, PATH_POINT_SIZE);
 Grid Flood;
@@ -49,10 +46,10 @@ void init()
 		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH, true);//초기 영토 지정
 	P1.setBR(GRID_WIDTH / 2 + INIT_TERRITORY_LENGTH, GRID_WIDTH / 2 - INIT_TERRITORY_LENGTH,
 		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH);//초기 Boundary Rectangle 지정
-	Zombies.push_back(Character(GRID_WIDTH / 4, GRID_HEIGHT / 4, 0, 1, 0));
-	Zombies.push_back(Character(GRID_WIDTH*3 / 4, GRID_HEIGHT / 4, 1, 0, 1));
-	Zombies.push_back(Character(GRID_WIDTH / 4, GRID_HEIGHT*3 / 4, 0, 0, 1));
-	Zombies.push_back(Character(GRID_WIDTH*3 / 4, GRID_HEIGHT*3 / 4, 1, 1, 0));
+	Zombies.push_back(Zombie(GRID_WIDTH / 4, GRID_HEIGHT / 4, 0, 1, 0));
+	Zombies.push_back(Zombie(GRID_WIDTH*3 / 4, GRID_HEIGHT / 4, 1, 0, 1));
+	Zombies.push_back(Zombie(GRID_WIDTH / 4, GRID_HEIGHT*3 / 4, 0, 0, 1));
+	Zombies.push_back(Zombie(GRID_WIDTH*3 / 4, GRID_HEIGHT*3 / 4, 1, 1, 0));
 
 
 }
