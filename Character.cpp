@@ -32,6 +32,16 @@ bool Character::is_on(int i)
 		return Path.isGrid(x, y);
 	}
 }
+int Character::getX()
+{
+	return x;
+}
+
+int Character::getY()
+{
+	return y;
+}
+
 
 void Character::setPos(int Pos_x, int Pos_y)
 {
@@ -92,6 +102,57 @@ void Character::move()
 		break;
 	}
 }
+
+
+bool Character::is_closed(Character& P, int i)
+{
+	switch (i)
+	{
+	case NORTH:
+		if (P.getY() > y)
+			return true;
+		return false;
+	case SOUTH:
+		if (P.getY() < y)
+			return true;
+		return false;
+	case WEST:
+		if (P.getX() < x)
+			return true;
+		return false;
+	case EAST:
+		if (P.getX() > x)
+			return true;
+		return false;
+
+
+	}
+}
+
+bool Character::is_blocked(int i)
+{
+	switch (i)
+	{
+	case NORTH:
+		if (Territory.isGrid(x, y + 1) || y >= GRID_HEIGHT)
+			return true;
+		return false;
+	case SOUTH:
+		if (Territory.isGrid(x, y - 1) || y <= 0)
+			return true;
+		return false;
+	case WEST:
+		if (Territory.isGrid(x-1, y) || x <= 0)
+			return true;
+		return false;
+	case EAST:
+		if (Territory.isGrid(x + 1, y) || x >= GRID_WIDTH)
+			return true;
+		return false;
+	}
+}
+
+
 
 Player::Player(int Pos_x, int Pos_y, float r, float g, float b) : Character(Pos_x,Pos_y,r,g,b)
 {
@@ -161,13 +222,17 @@ void Player::PathToTer()//경로를 영토로 바꾸는 함수
 
 void Player::FloodtoTerritory()
 {
+	score=0;
 	for (int i = BR_W; i <= BR_E; i++)
 	{
 		for (int j = BR_S; j <= BR_N; j++)
 		{
 			Territory.setPoint(i,j,!Flood.isGrid(i,j));
+			if (!Flood.isGrid(i, j))
+				score++;
 		}
 	}
+	score = temp;
 }
 
 

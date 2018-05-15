@@ -3,7 +3,7 @@
 #include <GL/glut.h>
 
 #ifndef GRID_WIDTH
-#define GRID_WIDTH 100		
+#define GRID_WIDTH 100
 #endif
 
 #ifndef GRID_HEIGHT
@@ -29,9 +29,13 @@ public:
 	void setDir(int di);
 	void setColor(float r, float g, float b);
 	void setPos(int pos_x, int pos_y);
+	int getX();
+	int getY();
 	virtual void move();
 	bool is_onTerritory();
 	bool is_on(int i);
+	bool is_blocked(int i);
+	bool is_closed(Character& P, int i);
 	void draw();
 
 protected:
@@ -41,6 +45,8 @@ protected:
 	int pre_dir = nulldir;
 	float Color[3];
 };
+
+
 
 
 class Player : public Character
