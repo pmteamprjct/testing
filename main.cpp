@@ -119,69 +119,18 @@ void processSpecialKey(int key, int x, int y)
 }
 
 
-void ZombieMoveCloser(int i, int X, int Y)
-{
-	if (!Zombies[i].is_blocked(NORTH) && Zombies[i].getY()<Y)
-		Zombies[i].setDir(NORTH);
-	else if (!Zombies[i].is_blocked(SOUTH) && Zombies[i].getY()>Y)
-		Zombies[i].setDir(SOUTH);
-	else if (!Zombies[i].is_blocked(EAST) && Zombies[i].getX()<X)
-		Zombies[i].setDir(EAST);
-	else if (!Zombies[i].is_blocked(WEST) && Zombies[i].getX()>X)
-		Zombies[i].setDir(WEST);
-	else
-		Zombies[i].setDir(nulldir);
-}
-
-
-#define CLOSE GRID_WIDTH/5+GRID_HEIGHT/5
 
 
 
-void ZombiePathFinder(int i)//Path를 찾는 모드
-{
-
-	//반경 CLOSE 이내의 Path들을 탐색한다.
-	int i1 = max(0, Zombies[i].getX() - CLOSE);
-	int k1 = min(GRID_WIDTH-1, Zombies[i].getX() + CLOSE);
-	int i2 = max(0, Zombies[i].getY() - CLOSE);
-	int k2 = min(GRID_HEIGHT - 1, Zombies[i].getY() + CLOSE);
-	int X=-1;
-	int Y=-1;
-	int dis = 999;
-	for (i1=0; i1 <= GRID_WIDTH-1; i1++)
-	{
-		for (i2=0; i2 <= GRID_HEIGHT-1; i2++)
-		{
-			//존재하는 Path들 중 거리가 가장 가까운 것을 찾는다.
-			if (Path.isGrid(i1, i2)&&Zombies[i].distance(i1,i2)<dis)
-			{
-				X = i1;
-				Y = i2;
-				dis = Zombies[i].distance(i1, i2);
-			}
-		}
-	}
-	if (X != -1 && Y != -1)
-		ZombieMoveCloser(i, X, Y);//가장 가까운 위치의 Path로 달린다.
-	else
-		Zombies[i].ZombieMoveCloser();
-}
-
-void ZombieCheckRisk(int i)
-{
-
-}
 
 
-
-void ZombieThink()
+void Zombies_Think()
 {
 	int k = Zombies.size();
 	for (int i = 0; i < k; i++)
 	{
-		ZombieCheckRisk(i);
-		ZombiePathFinder(i);
+		Zombies[i].ZombieCheckRisk();
+		Zombies[i].ZombiePathFinder();
 	}
 
 
@@ -196,7 +145,7 @@ void processIdle()
 	{
 
 		zombie_move_count++;
-		ZombieThink();
+		Zombies_Think();
 		P1.move();
 		int k = Zombies.size();
 		for (int i = 0; i < k; i++)

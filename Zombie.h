@@ -7,12 +7,20 @@
 #define ZOMBIE_SPEED 3
 #endif
 
+#ifndef ZOMBIE_CLOSE
+#define ZOMBIE_CLOSE GRID_WIDTH/5+GRID_HEIGHT/5
+#endif
 
 class Zombie : public Character
 {
 public:
 	Zombie(int x, int y, float r, float g, float b);
 	void ZombieMoveCloser();
+	void ZombieMoveCloser(int X,int Y);//가장 가까운 위치의 Path로 달린다.
+	void ZombiePathFinder();//Path를 찾는 모드
+	void ZombieCheckRisk();
+private:
+	int risk;
 
 };
 
