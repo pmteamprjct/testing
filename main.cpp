@@ -118,20 +118,6 @@ void processSpecialKey(int key, int x, int y)
 	}
 }
 
-void ZombieMoveCloser(int i)
-{
-	if (!Zombies[i].is_blocked(NORTH) && Zombies[i].is_closed(P1, NORTH))
-		Zombies[i].setDir(NORTH);
-	else if (!Zombies[i].is_blocked(SOUTH) && Zombies[i].is_closed(P1, SOUTH))
-		Zombies[i].setDir(SOUTH);
-	else if (!Zombies[i].is_blocked(EAST) && Zombies[i].is_closed(P1, EAST))
-		Zombies[i].setDir(EAST);
-	else if (!Zombies[i].is_blocked(WEST) && Zombies[i].is_closed(P1, WEST))
-		Zombies[i].setDir(WEST);
-	else
-		Zombies[i].setDir(nulldir);
-}
-
 
 void ZombieMoveCloser(int i, int X, int Y)
 {
@@ -179,7 +165,7 @@ void ZombiePathFinder(int i)//Path를 찾는 모드
 	if (X != -1 && Y != -1)
 		ZombieMoveCloser(i, X, Y);//가장 가까운 위치의 Path로 달린다.
 	else
-		ZombieMoveCloser(i);
+		Zombies[i].ZombieMoveCloser();
 }
 
 void ZombieCheckRisk(int i)

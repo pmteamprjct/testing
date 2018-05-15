@@ -11,6 +11,7 @@ class Zombie;
 extern Grid Territory;
 extern Grid Path;
 extern Grid Flood;
+extern Player P1;
 extern int score;
 
 extern vector<Zombie> Zombies;
