@@ -185,7 +185,7 @@ void ZombiePathFinder(int i)//Path를 찾는 모드
 		ZombieMoveCloser(i);
 }
 
-void ZombieCheckRisk(i)
+void ZombieCheckRisk(int i)
 {
 
 }

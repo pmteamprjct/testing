@@ -50,11 +50,6 @@ protected:
 	float Color[3];
 };
 
-class Zombie : public Character
-{
-
-};
-
 
 
 class Player : public Character
