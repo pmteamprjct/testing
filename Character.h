@@ -2,12 +2,14 @@
 #include <iostream>
 #include <GL/glut.h>
 
+
+
 #ifndef GRID_WIDTH
-#define GRID_WIDTH 100
+#define GRID_WIDTH 50
 #endif
 
 #ifndef GRID_HEIGHT
-#define GRID_HEIGHT 100		
+#define GRID_HEIGHT 50		
 #endif
 
 
@@ -36,6 +38,8 @@ public:
 	bool is_on(int i);
 	bool is_blocked(int i);
 	bool is_closed(Character& P, int i);
+	int distance(Character& P);
+	int distance(int x, int y);
 	void draw();
 
 protected:
@@ -46,6 +50,10 @@ protected:
 	float Color[3];
 };
 
+class Zombie : public Character
+{
+
+};
 
 
 

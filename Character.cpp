@@ -1,5 +1,6 @@
 #include "Character.h"
 #include "extern.h"
+
 #ifndef CHARA_POINT_SIZE
 #define CHARA_POINT_SIZE 6.0f
 #endif
@@ -152,6 +153,15 @@ bool Character::is_blocked(int i)
 	}
 }
 
+int Character::distance(Character& P)
+{
+	return abs(x - P.getX()) + abs(y - P.getY());
+}
+
+int Character::distance(int X, int Y)
+{
+	return abs(x - X) + abs(y - Y);
+}
 
 
 Player::Player(int Pos_x, int Pos_y, float r, float g, float b) : Character(Pos_x,Pos_y,r,g,b)
@@ -232,7 +242,6 @@ void Player::FloodtoTerritory()
 				score++;
 		}
 	}
-	score = temp;
 }
 
 
