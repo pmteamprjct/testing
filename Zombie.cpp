@@ -7,6 +7,23 @@ Zombie::Zombie(int x, int y, float r, float g, float b) : Character(x, y, r, g, 
 }
 
 
+void Zombie::setDir(int di)
+{
+	if (is_backward(di))
+	{
+		dir = nulldir;
+		return;
+	}
+	else
+	{
+		dir = di;
+		return;
+	}
+
+}
+
+
+
 void Zombie::ZombieMoveCloser()
 {
 	if (!is_blocked(NORTH) && is_closed(P1, NORTH))
@@ -23,22 +40,64 @@ void Zombie::ZombieMoveCloser()
 
 void Zombie::ZombieMoveCloser(int X, int Y)
 {
-	if (!is_blocked(NORTH) && getY()<Y)
+	if (!is_blocked(NORTH) && y<Y)
 		setDir(NORTH);
-	else if (!is_blocked(SOUTH) && getY()>Y)
+	else if (!is_blocked(SOUTH) && y>Y)
 		setDir(SOUTH);
-	else if (!is_blocked(EAST) && getX()<X)
+	else if (!is_blocked(EAST) && x<X)
 		setDir(EAST);
-	else if (!is_blocked(WEST) && getX()>X)
+	else if (!is_blocked(WEST) && x>X)
 		setDir(WEST);
 	else
 		setDir(nulldir);
 }
 
-
-void Zombie::ZombieCheckRisk()
+void Zombie::ZombieMoveAwayFrom(Character& P)
 {
+	if (!is_blocked(NORTH) && y>P.getY())
+		setDir(NORTH);
+	else if (!is_blocked(SOUTH) && y<P.getY())
+		setDir(SOUTH);
+	else if (!is_blocked(EAST) && x>P.getX())
+		setDir(EAST);
+	else if (!is_blocked(WEST) && x<P.getX())
+		setDir(WEST);
+	else
+		setDir(nulldir);
 
+
+}
+
+
+void Zombie::ZombieMoveOutFromBR()
+{
+	int d = P1.Depth_in_BR(x, y);
+	if (!is_blocked(NORTH) && P1.Depth_in_BR(x, y + 1) < d)
+		setDir(NORTH);
+	else if (!is_blocked(SOUTH) && P1.Depth_in_BR(x, y - 1) < d)
+		setDir(SOUTH);
+	else if (!is_blocked(EAST) && P1.Depth_in_BR(x + 1, y) < d)
+		setDir(EAST);
+	else if (!is_blocked(WEST) && P1.Depth_in_BR(x - 1, y) < d)
+		setDir(WEST);
+	else
+		setDir(nulldir);
+
+
+
+}
+
+
+void Zombie::ZombieCheckRisk()//자기 자신이 얼마나 위험한지를 체크하는 함수
+{
+	risk = 0;
+	risk += P1.Depth_in_BR(x, y);//Boundary Rectangle 안에 깊숙히 들어 있을수록 위험
+
+}
+
+int Zombie::getRisk()
+{
+	return risk;
 }
 
 

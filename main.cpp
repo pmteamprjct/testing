@@ -52,6 +52,7 @@ void init()
 	Zombies.push_back(Zombie(GRID_WIDTH*3 / 4, GRID_HEIGHT*3 / 4, 1, 1, 0));
 
 
+
 }
 void renderBitmapCharacter(int x, int y,  void *font, string str)
 {
@@ -130,7 +131,24 @@ void Zombies_Think()
 	for (int i = 0; i < k; i++)
 	{
 		Zombies[i].ZombieCheckRisk();
-		Zombies[i].ZombiePathFinder();
+		
+		if (Zombies[i].getRisk() < 15)
+			Zombies[i].ZombiePathFinder();
+		else
+		{
+			Zombies[i].ZombieMoveOutFromBR();
+		}
+
+		for (int j = 0; j < k; j++)
+		{
+			if (j == i)
+				continue;
+			if (Zombies[i].distance(Zombies[j]) < 7)
+			{
+				Zombies[i].ZombieMoveAwayFrom(Zombies[j]);
+				break;
+			}
+		}
 	}
 
 

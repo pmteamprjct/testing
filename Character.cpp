@@ -69,6 +69,10 @@ void Character::setDir(int di)
 {
 	dir = di;
 }
+int Character::getDir()
+{
+	return dir;
+}
 
 void Character::draw()
 {
@@ -298,4 +302,11 @@ void Player::floodChecking(int BR_START, int BR_END, int BR_SIDE, bool isHorizon
 		}
 
 	}
+}
+
+int Player::Depth_in_BR(int X, int Y)//Boundary Rectangle 안의 점의 깊이를 반환하는 함수
+{
+	if (X > BR_E | X < BR_W) return 0;
+	if (Y > BR_N | Y < BR_S) return 0;
+	return min(abs(BR_E - X), abs(BR_W - X)) + min(abs(BR_N - Y), abs(BR_S - Y));
 }

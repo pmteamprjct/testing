@@ -28,11 +28,12 @@ class Character
 public:
 	Character(int x, int y, float r, float g, float b);
 	bool is_backward(int di);
-	void setDir(int di);
+	virtual void setDir(int di);
 	void setColor(float r, float g, float b);
 	void setPos(int pos_x, int pos_y);
 	int getX();
 	int getY();
+	int getDir();
 	virtual void move();
 	bool is_onTerritory();
 	bool is_on(int i);
@@ -64,6 +65,7 @@ public:
 	void FloodtoTerritory();
 	void floodChecking(int BR_Start, int BR_End, int BR_Side, bool isHorizontal);
 	void PathToTer();//경로를 영토로 바꾸는 함수
+	int Depth_in_BR(int x, int y);//Boundary Rectangle 안의 점의 깊이를 반환하는 함수
 private:
 	int BR_N;//Boundary Rectangle, North
 	int BR_S;
