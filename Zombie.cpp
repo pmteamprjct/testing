@@ -1,6 +1,11 @@
 #include "Zombie.h"
 #include <algorithm>
 
+
+Grid RiskFloodBoard;
+
+
+
 Zombie::Zombie(int x, int y, float r, float g, float b) : Character(x, y, r, g, b)
 {
 
@@ -88,11 +93,31 @@ void Zombie::ZombieMoveOutFromBR()
 }
 
 
-void Zombie::ZombieCheckRisk()//자기 자신이 얼마나 위험한지를 체크하는 함수
+void Zombie::ZombieCheckRisk()//자기 자신이 얼마나 위험한지를 체크하는 함수.
 {
 	risk = 0;
-	risk += P1.Depth_in_BR(x, y);//Boundary Rectangle 안에 깊숙히 들어 있을수록 위험
+	risk += P1.Depth_in_BR(x, y);//Boundary Rectangle 안에 깊숙히 들어 있을수록 위험.
 
+}
+
+
+int Zombie::RiskCheckFlood(int x, int y, int dist)//Flooding을 통한 BR에서의 최단탈출시간 Check 함수.
+{
+	bool Way[4] = { false };
+	int Min_checker = -1;
+	if (!P1.is_inBR(x, y))
+		return dist;
+	//4방향 체크
+	if (!RiskFloodBoard.isGrid(x, y + 1) && !is_blocked(x, y + 1))
+		Way[0] = true;
+	if (!RiskFloodBoard.isGrid(x, y - 1) && !is_blocked(x, y - 1))
+		Way[1] = true;
+	if (!RiskFloodBoard.isGrid(x + 1, y) && !is_blocked(x + 1, y))
+		Way[2] = true;
+	if (!RiskFloodBoard.isGrid(x - 1 , y) && !is_blocked(x - 1, y))
+		Way[3] = true;
+
+	return 0;
 }
 
 int Zombie::getRisk()

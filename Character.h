@@ -38,6 +38,7 @@ public:
 	bool is_onTerritory();
 	bool is_on(int i);
 	bool is_blocked(int i);
+	bool is_blocked(int x, int y);
 	bool is_closed(Character& P, int i);
 	int distance(Character& P);
 	int distance(int x, int y);
@@ -60,6 +61,12 @@ public:
 	void drawPath();//Player의 좌표를 Path Grid에 포함시킨다.
 	void processBR();//Player를 포함하는 Boundary Rectangle 갱신한다.
 	void setBR(int E, int W, int N, int S);
+	int getBRN();
+	int getBRS();
+	int getBRW();
+	int getBRE();
+	bool is_inBR(int x, int y);
+	bool is_inBR(Character& P);
 	void move();
 	void flood(int x, int y);
 	void FloodtoTerritory();

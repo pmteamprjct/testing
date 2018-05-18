@@ -8,7 +8,8 @@
 clock_t clock_start = clock();
 clock_t clock_end;
 bool GameOver = false;
-
+bool GameWin = false;
+int select = -1;
 int debugger_int = 0;
 
 #ifndef WIDTH
@@ -50,9 +51,6 @@ void init()
 	Zombies.push_back(Zombie(GRID_WIDTH*3 / 4, GRID_HEIGHT / 4, 1, 0, 1));
 	Zombies.push_back(Zombie(GRID_WIDTH / 4, GRID_HEIGHT*3 / 4, 0, 0, 1));
 	Zombies.push_back(Zombie(GRID_WIDTH*3 / 4, GRID_HEIGHT*3 / 4, 1, 1, 0));
-
-
-
 }
 void renderBitmapCharacter(int x, int y,  void *font, string str)
 {
@@ -70,8 +68,6 @@ void renderScene() {
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
 	Territory.draw();
 	Path.draw();
 	P1.draw();
@@ -84,14 +80,20 @@ void renderScene() {
 			glColor3f(1, 1, 1);
 			renderBitmapCharacter(GRID_WIDTH / 2, GRID_HEIGHT / 2, GLUT_BITMAP_TIMES_ROMAN_24, "GAME OVER");
 	}
+	if (GameWin)
+	{
+		glColor3f(1, 1, 1);
+		renderBitmapCharacter(GRID_WIDTH / 2, GRID_HEIGHT / 2, GLUT_BITMAP_TIMES_ROMAN_24, "GAME WIN");
+	}
 
 	glColor3f(1, 1, 1);
-	string scr = to_string((score * 100) / (GRID_WIDTH*GRID_HEIGHT));
+	int score_percent = (score * 100) / (GRID_WIDTH*GRID_HEIGHT);
+	if (score_percent >= 60)
+		GameWin = true;
+	string scr = to_string(score_percent);
 	scr.append("%");
 	renderBitmapCharacter(GRID_WIDTH - 10, GRID_HEIGHT - 10, GLUT_BITMAP_TIMES_ROMAN_10, scr);
 	renderBitmapCharacter(10, GRID_HEIGHT - 10, GLUT_BITMAP_TIMES_ROMAN_10, to_string(debugger_int));
-
-
 
 	glutSwapBuffers();
 }
@@ -133,22 +135,34 @@ void Zombies_Think()
 		Zombies[i].ZombieCheckRisk();
 		
 		if (Zombies[i].getRisk() < 15)
+		{
 			Zombies[i].ZombiePathFinder();
+			for (int j = 0; j < k; j++)
+			{
+				if (j == i)
+					continue;
+				if (Zombies[i].distance(Zombies[j]) < 7)
+				{
+					Zombies[i].ZombieMoveAwayFrom(Zombies[j]);
+					break;
+				}
+			}
+		}
 		else
 		{
 			Zombies[i].ZombieMoveOutFromBR();
 		}
-
 		for (int j = 0; j < k; j++)
 		{
 			if (j == i)
 				continue;
-			if (Zombies[i].distance(Zombies[j]) < 7)
+			if (Zombies[i].distance(Zombies[j]) < 1)
 			{
 				Zombies[i].ZombieMoveAwayFrom(Zombies[j]);
 				break;
 			}
 		}
+
 	}
 
 
@@ -156,10 +170,12 @@ void Zombies_Think()
 
 void processIdle()
 {
+	if (GameWin)
+		return;
 	if (GameOver)
 		return;
 	clock_end = clock();
-	if (clock_end - clock_start > 1000 / 20)
+	if (clock_end - clock_start > 1000 / 15)
 	{
 
 		zombie_move_count++;

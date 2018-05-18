@@ -135,6 +135,13 @@ bool Character::is_closed(Character& P, int i)
 	}
 }
 
+
+bool Character::is_blocked(int x, int y)
+{
+	if (Territory.isGrid(x, y) || x <= 0 || y <= 0 || x >= GRID_WIDTH || y >= GRID_HEIGHT)
+		return true;
+	return false;
+}
 bool Character::is_blocked(int i)
 {
 	switch (i)
@@ -199,6 +206,39 @@ void Player::move()
 	Character::move();
 	processBR();
 }
+
+int Player::getBRN()
+{
+	return BR_N;
+}
+int Player::getBRS()
+{
+	return BR_S;
+}
+int Player::getBRW()
+{
+	return BR_W;
+}
+int Player::getBRE()
+{
+	return BR_E;
+}
+
+bool Player::is_inBR(int x, int y)
+{
+	if (x<BR_E&&x>BR_W&&y<BR_N&&y>BR_S)
+		return true;
+	return false;
+}
+bool Player::is_inBR(Character& P)
+{
+	int X = P.getX();
+	int Y = P.getY();
+	if (X<BR_E&&X>BR_W&&Y<BR_N&&Y>BR_S)
+		return true;
+	return false;
+}
+
 
 void Player::flood(int x, int y)
 {

@@ -4,7 +4,7 @@
 #include"Grid.h"
 
 #ifndef ZOMBIE_SPEED
-#define ZOMBIE_SPEED 3
+#define ZOMBIE_SPEED 2
 #endif
 
 #ifndef ZOMBIE_CLOSE
@@ -23,6 +23,7 @@ public:
 	void ZombieMoveAwayFrom(Character& P);
 	void ZombiePathFinder();//Path를 찾는 모드
 	void ZombieCheckRisk();
+	int RiskCheckFlood(int x, int y, int dist);
 private:
 	int risk=0;
 
