@@ -67,6 +67,8 @@ Character::Character(int Pos_x, int Pos_y, float r, float g, float b)
 
 void Character::setDir(int di)
 {
+	if(dir!=-1) 
+		pre_dir = dir;
 	dir = di;
 }
 int Character::getDir()
