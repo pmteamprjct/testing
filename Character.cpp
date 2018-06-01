@@ -3,7 +3,7 @@
 #include "Grid.h"
 
 #ifndef CHARA_POINT_SIZE
-#define CHARA_POINT_SIZE 6.0f
+#define CHARA_POINT_SIZE 14.5f
 #endif
 
 bool Character::is_backward(int di)
@@ -18,11 +18,15 @@ bool Character::is_backward(int di)
 		return true;
 	return false;
 }
-
-bool Character::is_onTerritory()
+bool Character::is_equal_pos(Character& P)
 {
-	return Territory.isGrid(x, y);
+	if (x == P.x&&y == P.y)
+		return true;
+	return false;
 }
+
+
+
 
 bool Character::is_on(int i)
 {
@@ -32,6 +36,12 @@ bool Character::is_on(int i)
 		return Territory.isGrid(x, y);
 	case PATH:
 		return Path.isGrid(x, y);
+	case MAP_BOUND:
+		if (x == 1 || y == 1 || x == GRID_WIDTH - 1 || y == GRID_HEIGHT - 1)
+			return true;
+		return false;
+	case ZOMBIE_POS:
+		return Zombie_position.isGrid(x, y);
 	}
 }
 int Character::getX()
@@ -61,49 +71,98 @@ void Character::setColor(float r, float g, float b)
 Character::Character(int Pos_x, int Pos_y, float r, float g, float b)
 {
 	setPos(Pos_x, Pos_y);
+	ProcessBPos();
 	setColor(r, g, b);
 	dir = nulldir;
 }
 
-void Character::setDir(int di)
+bool Character::setDir(int di)
 {
-	if(dir!=-1) 
-		pre_dir = dir;
 	dir = di;
+	return true;
 }
 int Character::getDir()
 {
 	return dir;
 }
 
-void Character::draw()
+void Character::draw(int phase)
 {
 	glPointSize(CHARA_POINT_SIZE);
 	glBegin(GL_POINTS);
 	glColor3f(Color[0], Color[1], Color[2]);
-	glVertex3f(x, y, 0);
+	if (phase == 1)
+	{
+		glVertex3f(x, y, 0);
+	}
+	else
+	{
+		glVertex3f((b_x + x) / 2.0, (b_y + y) / 2.0, 0);
+	}
 	glEnd();
+}
+int Character::getbX()
+{
+	return b_x;
+}
+int Character::getbY()
+{
+	return b_y;
 }
 
 
-void Character::move()
+bool Character::is_out_of_bound(int di)
 {
 	switch (dir)
 	{
 	case NORTH:
-		if(y<GRID_WIDTH)
+		if (y >= GRID_WIDTH)
+			return true;
+		return false;
+	case SOUTH:
+		if (y <= 0)
+			return true;
+		return false;
+	case EAST:
+		if (x >= GRID_HEIGHT)
+			return true;
+		return false;
+	case WEST:
+		if (x <= 0)
+			return true;
+		return false;
+	default:
+		return false;
+	}
+}
+
+void Character::ProcessBPos()
+{
+	b_x = x;
+	b_y = y;
+}
+
+
+
+void Character::move()
+{
+	ProcessBPos();
+	switch (dir)
+	{
+	case NORTH:
+		if(y<GRID_WIDTH-1)
 			setPos(x,y+1);
 		break;
 	case SOUTH:
-		if(y>0)
+		if(y>1)
 			setPos(x, y - 1);
 		break;
 	case EAST:
-		if (x<GRID_HEIGHT)
+		if (x<GRID_HEIGHT-1)
 			setPos(x+1, y);
 		break;
 	case WEST:
-		if (x>0)
+		if (x>1)
 			setPos(x - 1, y);
 		break;
 	default:
@@ -112,7 +171,7 @@ void Character::move()
 }
 
 
-bool Character::is_closed(Character& P, int i)
+bool Character::is_closer_to(Character& P, int i)
 {
 	switch (i)
 	{
@@ -138,38 +197,10 @@ bool Character::is_closed(Character& P, int i)
 }
 
 
-bool Character::is_blocked(int x, int y)
-{
-	if (Territory.isGrid(x, y) || x <= 0 || y <= 0 || x >= GRID_WIDTH || y >= GRID_HEIGHT)
-		return true;
-	return false;
-}
-bool Character::is_blocked(int i)
-{
-	switch (i)
-	{
-	case NORTH:
-		if (Territory.isGrid(x, y + 1) || y >= GRID_HEIGHT)
-			return true;
-		return false;
-	case SOUTH:
-		if (Territory.isGrid(x, y - 1) || y <= 0)
-			return true;
-		return false;
-	case WEST:
-		if (Territory.isGrid(x-1, y) || x <= 0)
-			return true;
-		return false;
-	case EAST:
-		if (Territory.isGrid(x + 1, y) || x >= GRID_WIDTH)
-			return true;
-		return false;
-	}
-}
 
 int Character::distance(Character& P)
 {
-	return abs(x - P.getX()) + abs(y - P.getY());
+	return distance(P.getX(), P.getY());
 }
 
 int Character::distance(int X, int Y)
@@ -242,6 +273,21 @@ bool Player::is_inBR(Character& P)
 }
 
 
+bool Player::enclosed_by_path()//ÆÐ½º·Î µÑ·¯½ÎÀÎ »óÅÂ¸é true
+{
+	if (y!=GRID_WIDTH-1&&!Path.isGrid(x, y + 1))
+		return false;
+	if (y!=1 && !Path.isGrid(x, y - 1))
+		return false;
+	if (x!=GRID_HEIGHT-1 && !Path.isGrid(x + 1, y))
+		return false;
+	if (x!=1 && !Path.isGrid(x - 1, y))
+		return false;
+	return true;
+
+}
+
+
 void Player::flood(int x, int y)
 {
 	if (Flood.isGrid(x, y))
@@ -262,13 +308,13 @@ void Player::flood(int x, int y)
 }
 
 
-void Player::PathToTer()//ê²½ë¡œë¥¼ ì˜í† ë¡œ ë°”ê¾¸ëŠ” í•¨ìˆ˜
+void Player::PathToTer()//°æ·Î¸¦ ¿µÅä·Î ¹Ù²Ù´Â ÇÔ¼ö
 {
 	if (Path.isEmpty())
 		return;
 	PREV_B_EMPTY = false;
-	floodChecking(BR_W, BR_E, BR_N, false);//ìœ„ìª½ì˜ ìˆ˜í‰ ê²½ê³„ë¥¼ ì™¼ìª½ì—ì„œ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ë”°ë¼ê°€ë©° check. ìˆ˜ì§ì´ ì•„ë‹ˆë¯€ë¡œ ë§ˆì§€ë§‰ ì¸ìžëŠ” false.
-	floodChecking(BR_N, BR_S, BR_E, true);//ì˜¤ë¥¸ìª½ì˜ ìˆ˜ì§ ê²½ê³„ë¥¼ ìœ„ìª½ì—ì„œ ì•„ëž˜ìª½ìœ¼ë¡œ ë‚´ë ¤ê°€ë©° check.ìˆ˜ì§ì´ë¯€ë¡œ true
+	floodChecking(BR_W, BR_E, BR_N, false);//À§ÂÊÀÇ ¼öÆò °æ°è¸¦ ¿ÞÂÊ¿¡¼­ ¿À¸¥ÂÊÀ¸·Î µû¶ó°¡¸ç check. ¼öÁ÷ÀÌ ¾Æ´Ï¹Ç·Î ¸¶Áö¸· ÀÎÀÚ´Â false.
+	floodChecking(BR_N, BR_S, BR_E, true);//¿À¸¥ÂÊÀÇ ¼öÁ÷ °æ°è¸¦ À§ÂÊ¿¡¼­ ¾Æ·¡ÂÊÀ¸·Î ³»·Á°¡¸ç check.¼öÁ÷ÀÌ¹Ç·Î true
 	floodChecking(BR_E, BR_W, BR_S, false);
 	floodChecking(BR_S, BR_N, BR_W, true);
 	FloodtoTerritory();
@@ -292,7 +338,7 @@ void Player::FloodtoTerritory()
 }
 
 
-//BR_SIDEìª½ì˜ ê²½ê³„ë¥¼ BR_STARTë¶€í„° BR_ENDê¹Œì§€ ëŒë©´ì„œ floodë¥¼ ê°€í•˜ëŠ” ë™ì‹œì— ê²½ê³„ì˜ emptinessë¥¼ check í•˜ëŠ” í•¨ìˆ˜
+//BR_SIDEÂÊÀÇ °æ°è¸¦ BR_STARTºÎÅÍ BR_END±îÁö µ¹¸é¼­ flood¸¦ °¡ÇÏ´Â µ¿½Ã¿¡ °æ°èÀÇ emptiness¸¦ check ÇÏ´Â ÇÔ¼ö
 void Player::floodChecking(int BR_START, int BR_END, int BR_SIDE, bool isHorizontal)
 {
 	if (!isHorizontal)
@@ -301,12 +347,12 @@ void Player::floodChecking(int BR_START, int BR_END, int BR_SIDE, bool isHorizon
 		{
 			if (!PREV_B_EMPTY && !Territory.isGrid(i, BR_SIDE) && !Path.isGrid(i, BR_SIDE))
 			{
-				flood(i, BR_SIDE);//floodingì„ ê°€í•œë‹¤.
-				PREV_B_EMPTY = true;//ë¹ˆ ê²½ê³„ìž„ì„ í‘œí˜„í•¨.
+				flood(i, BR_SIDE);//floodingÀ» °¡ÇÑ´Ù.
+				PREV_B_EMPTY = true;//ºó °æ°èÀÓÀ» Ç¥ÇöÇÔ.
 				continue;
 			}
-			if (Territory.isGrid(i, BR_SIDE) || Path.isGrid(i, BR_SIDE))//ê²½ê³„ê°€ ë¹„ì–´ìžˆì§€ ì•Šìœ¼ë©´
-				PREV_B_EMPTY = false;//ê²½ê³„ê°€ ë¹„ì–´ìžˆì§€ ì•Šì•˜ìŒì„ í‘œí˜„í•¨.
+			if (Territory.isGrid(i, BR_SIDE) || Path.isGrid(i, BR_SIDE))//°æ°è°¡ ºñ¾îÀÖÁö ¾ÊÀ¸¸é
+				PREV_B_EMPTY = false;//°æ°è°¡ ºñ¾îÀÖÁö ¾Ê¾ÒÀ½À» Ç¥ÇöÇÔ.
 			if (BR_START > BR_END)
 				i--;
 			if (BR_END > BR_START)
@@ -323,14 +369,14 @@ void Player::floodChecking(int BR_START, int BR_END, int BR_SIDE, bool isHorizon
 	{
 		for (int i = BR_START;;)
 		{
-			if (!PREV_B_EMPTY && !Territory.isGrid(BR_SIDE, i) && !Path.isGrid(BR_SIDE, i))//ê²½ê³„ê°€ ë¹„ì–´ìžˆì§€ ì•Šìœ¼ë©´
+			if (!PREV_B_EMPTY && !Territory.isGrid(BR_SIDE, i) && !Path.isGrid(BR_SIDE, i))//°æ°è°¡ ºñ¾îÀÖÁö ¾ÊÀ¸¸é
 			{
-				flood(BR_SIDE, i);//floodingì„ ê°€í•œë‹¤.
-				PREV_B_EMPTY = true;//ë¹ˆ ê²½ê³„ìž„ì„ í‘œí˜„í•¨.
+				flood(BR_SIDE, i);//floodingÀ» °¡ÇÑ´Ù.
+				PREV_B_EMPTY = true;//ºó °æ°èÀÓÀ» Ç¥ÇöÇÔ.
 				continue;
 			}
-			if (Territory.isGrid(BR_SIDE, i) || Path.isGrid(BR_SIDE, i))//ê²½ê³„ê°€ ë¹„ì–´ìžˆì§€ ì•Šìœ¼ë©´
-				PREV_B_EMPTY = false;//ê²½ê³„ê°€ ë¹„ì–´ìžˆì§€ ì•Šì•˜ìŒì„ í‘œí˜„í•¨.
+			if (Territory.isGrid(BR_SIDE, i) || Path.isGrid(BR_SIDE, i))//°æ°è°¡ ºñ¾îÀÖÁö ¾ÊÀ¸¸é
+				PREV_B_EMPTY = false;//°æ°è°¡ ºñ¾îÀÖÁö ¾Ê¾ÒÀ½À» Ç¥ÇöÇÔ.
 			if (BR_START > BR_END)
 				i--;
 			if (BR_END > BR_START)
@@ -346,9 +392,29 @@ void Player::floodChecking(int BR_START, int BR_END, int BR_SIDE, bool isHorizon
 	}
 }
 
-int Player::Depth_in_BR(int X, int Y)//Boundary Rectangle ì•ˆì˜ ì ì˜ ê¹Šì´ë¥¼ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜
+int Player::Depth_in_BR(int X, int Y)//Boundary Rectangle ¾ÈÀÇ Á¡ÀÇ ±íÀÌ¸¦ ¹ÝÈ¯ÇÏ´Â ÇÔ¼ö
 {
 	if (X > BR_E | X < BR_W) return 0;
 	if (Y > BR_N | Y < BR_S) return 0;
 	return min(abs(BR_E - X), abs(BR_W - X)) + min(abs(BR_N - Y), abs(BR_S - Y));
+}
+
+
+bool Player::is_backward(int di)
+{
+	if (prev_dir == NORTH&&di == SOUTH)
+		return true;
+	if (prev_dir == SOUTH&&di == NORTH)
+		return true;
+	if (prev_dir == EAST&&di == WEST)
+		return true;
+	if (prev_dir == WEST&&di == EAST)
+		return true;
+	return false;
+
+}
+
+void Player::process_prev_dir()
+{
+	prev_dir = dir;
 }
