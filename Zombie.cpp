@@ -34,9 +34,9 @@ void Zombie::CheckDir() {
 			blockedDir[i] = true;
 		else 
 			blockedDir[i] =false;
-		isAllBlocked &= blockedDir[i]; // ÀüºÎ ¸·Çû´Ù¸é true
+		isAllBlocked &= blockedDir[i]; // ì „ë¶€ ë§‰í˜”ë‹¤ë©´ true
 	}
-} //¾î´À ¹æÇâÀÌ ¸·Çû´ÂÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+} //ì–´ëŠ ë°©í–¥ì´ ë§‰í˜”ëŠ”ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜
 
 void Zombie::ZombieMoveCloser()
 {
@@ -102,21 +102,21 @@ void Zombie::ZombieMoveOutFromBR()
 }
 
 
-void Zombie::ZombieCheckRisk()//ÀÚ±â ÀÚ½ÅÀÌ ¾ó¸¶³ª À§ÇèÇÑÁö¸¦ Ã¼Å©ÇÏ´Â ÇÔ¼ö.
+void Zombie::ZombieCheckRisk()//ìê¸° ìì‹ ì´ ì–¼ë§ˆë‚˜ ìœ„í—˜í•œì§€ë¥¼ ì²´í¬í•˜ëŠ” í•¨ìˆ˜.
 {
 	risk = 0;
-	risk += P1.Depth_in_BR(x, y);//Boundary Rectangle ¾È¿¡ ±í¼÷È÷ µé¾î ÀÖÀ»¼ö·Ï À§Çè.
+	risk += P1.Depth_in_BR(x, y);//Boundary Rectangle ì•ˆì— ê¹Šìˆ™íˆ ë“¤ì–´ ìˆì„ìˆ˜ë¡ ìœ„í—˜.
 
 }
 
 
-int Zombie::RiskCheckFlood(int x, int y, int dist)//FloodingÀ» ÅëÇÑ BR¿¡¼­ÀÇ ÃÖ´ÜÅ»Ãâ½Ã°£ Check ÇÔ¼ö.
+int Zombie::RiskCheckFlood(int x, int y, int dist)//Floodingì„ í†µí•œ BRì—ì„œì˜ ìµœë‹¨íƒˆì¶œì‹œê°„ Check í•¨ìˆ˜.
 {
 	bool Way[4] = { false };
 	int Min_checker = -1;
 	if (!P1.is_inBR(x, y))
 		return dist;
-	//4¹æÇâ Ã¼Å©
+	//4ë°©í–¥ ì²´í¬
 	if (!RiskFloodBoard.isGrid(x, y + 1) && !is_blocked(x, y + 1))
 		Way[0] = true;
 	if (!RiskFloodBoard.isGrid(x, y - 1) && !is_blocked(x, y - 1))
@@ -142,22 +142,22 @@ int Zombie::getOpp() {
 	return opportunity;
 }
 
-void Zombie::ZombiePathFinder()//Path¸¦ Ã£´Â ¸ğµå
+void Zombie::ZombiePathFinder()//Pathë¥¼ ì°¾ëŠ” ëª¨ë“œ
 {
 
-	//¹İ°æ CLOSE ÀÌ³»ÀÇ PathµéÀ» Å½»öÇÑ´Ù.
+	//ë°˜ê²½ CLOSE ì´ë‚´ì˜ Pathë“¤ì„ íƒìƒ‰í•œë‹¤.
 	int i1 = max(0, x - ZOMBIE_CLOSE);
 	int k1 = min(GRID_WIDTH - 1, x + ZOMBIE_CLOSE);
 	int i2 = max(0, y - ZOMBIE_CLOSE);
 	int k2 = min(GRID_HEIGHT - 1, y + ZOMBIE_CLOSE);
-	closestPath[0] = closestPath[1] = -1; // º¯¼ö X,Y¸¦ ¸â¹öº¯¼ö closestPath[2]·Î ¹Ù²å½À´Ï´Ù.
-	distFromPath = 999; // º¯¼ö dis¸¦ ¸â¹öº¯¼ö distFromPath·Î ¹Ù²å½À´Ï´Ù.
+	closestPath[0] = closestPath[1] = -1; // ë³€ìˆ˜ X,Yë¥¼ ë©¤ë²„ë³€ìˆ˜ closestPath[2]ë¡œ ë°”ê¿¨ìŠµë‹ˆë‹¤.
+	distFromPath = 999; // ë³€ìˆ˜ disë¥¼ ë©¤ë²„ë³€ìˆ˜ distFromPathë¡œ ë°”ê¿¨ìŠµë‹ˆë‹¤.
 	opportunity = 0;
 	for (i1 = 0; i1 <= GRID_WIDTH - 1; i1++)
 	{
 		for (i2 = 0; i2 <= GRID_HEIGHT - 1; i2++)
 		{
-			//Á¸ÀçÇÏ´Â Pathµé Áß °Å¸®°¡ °¡Àå °¡±î¿î °ÍÀ» Ã£´Â´Ù.
+			//ì¡´ì¬í•˜ëŠ” Pathë“¤ ì¤‘ ê±°ë¦¬ê°€ ê°€ì¥ ê°€ê¹Œìš´ ê²ƒì„ ì°¾ëŠ”ë‹¤.
 			if (Path.isGrid(i1, i2)) {
 				opportunity++;
 				if(distance(i1,i2)<distFromPath)
@@ -169,12 +169,12 @@ void Zombie::ZombiePathFinder()//Path¸¦ Ã£´Â ¸ğµå
 			}
 		}
 	}
-	opportunity -= distFromPath/2; // PathÀÇ ±æÀÌ - Path·ÎºÎÅÍÀÇ °Å¸®
+	opportunity -= distFromPath/2; // Pathì˜ ê¸¸ì´ - Pathë¡œë¶€í„°ì˜ ê±°ë¦¬
 }
 
-void Zombie::ZombiePathAttack(){ // Path¸¦ ÇâÇØ µ¹°İ
+void Zombie::ZombiePathAttack(){ // Pathë¥¼ í–¥í•´ ëŒê²©
 	if (closestPath[0] != -1 && closestPath[1] != -1)
-		ZombieMoveCloser(closestPath[0], closestPath[1]);//°¡Àå °¡±î¿î À§Ä¡ÀÇ Path·Î ´Ş¸°´Ù.
+		ZombieMoveCloser(closestPath[0], closestPath[1]);//ê°€ì¥ ê°€ê¹Œìš´ ìœ„ì¹˜ì˜ Pathë¡œ ë‹¬ë¦°ë‹¤.
 	else
 		ZombieMoveCloser();
 }

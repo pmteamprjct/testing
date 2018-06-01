@@ -21,11 +21,11 @@ public:
 	int getOpp();
 	void CheckDir();
 	void ZombieMoveCloser();
-	void ZombieMoveCloser(int X,int Y);//°¡Àå °¡±î¿î À§Ä¡ÀÇ Path·Î ´Ş¸°´Ù.
+	void ZombieMoveCloser(int X,int Y);//ê°€ì¥ ê°€ê¹Œìš´ ìœ„ì¹˜ì˜ Pathë¡œ ë‹¬ë¦°ë‹¤.
 	void ZombieMoveOutFromBR();
 	void ZombieMoveAwayFrom(Character& P);
-	void ZombiePathFinder();//Path¸¦ Ã£´Â ¸ğµå
-	void ZombiePathAttack(); // PathFinder¿¡¼­ ºĞ¸®
+	void ZombiePathFinder();//Pathë¥¼ ì°¾ëŠ” ëª¨ë“œ
+	void ZombiePathAttack(); // PathFinderì—ì„œ ë¶„ë¦¬
 	void ZombieCheckRisk();
 	int RiskCheckFlood(int x, int y, int dist);
 private:

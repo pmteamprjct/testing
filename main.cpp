@@ -15,7 +15,7 @@ bool GameOver = false;
 bool GameWin = false;
 bool levelSet = false;
 //int select = -1;
-//Windows.h¿Í Ãæµ¹ÇÏ¿© Á¦¿ÜÇß½À´Ï´Ù
+//Windows.hì™€ ì¶©ëŒí•˜ì—¬ ì œì™¸í–ˆìŠµë‹ˆë‹¤
 int kill = 0;
 int life = 3;
 int frame = 0;
@@ -40,7 +40,6 @@ int num_of_enemies = 8;
 int zombie_move_count = 0;
 int score;
 int score_percent;
-
 Player P1(GRID_WIDTH/2, GRID_HEIGHT/2, 1, 0, 0);
 vector<Zombie> Zombies;
 Grid Territory(0.5, 0, 0.5, 1,GRID_POINT_SIZE);
@@ -53,9 +52,9 @@ using namespace std;
 void init()
 {	
 	Territory.setRec(GRID_WIDTH/2+ INIT_TERRITORY_LENGTH, GRID_WIDTH / 2 - INIT_TERRITORY_LENGTH, 
-		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH, true);//ÃÊ±â ¿µÅä ÁöÁ¤
+		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH, true);//ì´ˆê¸° ì˜í†  ì§€ì •
 	P1.setBR(GRID_WIDTH / 2 + INIT_TERRITORY_LENGTH, GRID_WIDTH / 2 - INIT_TERRITORY_LENGTH,
-		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH);//ÃÊ±â Boundary Rectangle ÁöÁ¤
+		GRID_HEIGHT / 2 + INIT_TERRITORY_LENGTH, GRID_HEIGHT / 2 - INIT_TERRITORY_LENGTH);//ì´ˆê¸° Boundary Rectangle ì§€ì •
 }
 
 
@@ -76,8 +75,8 @@ void init_create_zombies() {
 	}
 }
 
-//»õ·Î Á¤ÀÇÇÑ ÇÔ¼ö
-//°ÔÀÓ ¿À¹ö½Ã ÀçµµÀü processSpecialKeys¿¡¼­ È£Ãâ
+//ìƒˆë¡œ ì •ì˜í•œ í•¨ìˆ˜
+//ê²Œì„ ì˜¤ë²„ì‹œ ì¬ë„ì „ processSpecialKeysì—ì„œ í˜¸ì¶œ
 void reset() {
 	GameOver = false;
 	GameWin = false;
@@ -138,7 +137,7 @@ void renderScene() {
 	renderBitmapCharacter(10, GRID_HEIGHT - 10, GLUT_BITMAP_TIMES_ROMAN_10, "kill: " + to_string(kill));
 	renderBitmapCharacter(10, GRID_HEIGHT - 11, GLUT_BITMAP_TIMES_ROMAN_10, "life: " + to_string(life));
 
-	// GameWin »óÈ²¿¡ ±ÛÀÚ°¡ Á¦´ë·Î Ç¥½ÃµÇÁö ¾Ê´Â °Í °°¾Æ ¼ø¼­¸¦ ¹Ù²ãº¸¾Ò½À´Ï´Ù.
+	// GameWin ìƒí™©ì— ê¸€ìê°€ ì œëŒ€ë¡œ í‘œì‹œë˜ì§€ ì•ŠëŠ” ê²ƒ ê°™ì•„ ìˆœì„œë¥¼ ë°”ê¿”ë³´ì•˜ìŠµë‹ˆë‹¤.
 
 	if (GameOver)
 	{
@@ -208,7 +207,6 @@ void ProcessNormalKey(unsigned char key, int x, int y) {
 
 
 
-
 void Zombies_Think()
 {
 	int k = Zombies.size();
@@ -234,7 +232,6 @@ void Zombies_Think()
 					break;
 				}
 			}
-			
 		}
 		else
 		{
@@ -282,29 +279,29 @@ void processIdle()
 			}
 			if (P1.is_on(PATH))
 			{
-				(life>0) ? life-- : life = 0;  // ¸ñ¼û °¨¼Ò
+				(life>0) ? life-- : life = 0;  // ëª©ìˆ¨ ê°ì†Œ
 				if (life == 0)
 					GameOver = true;
 				else {
 					Path.empty();
 					P1.setPos(GRID_WIDTH / 2, GRID_HEIGHT / 2);
 					P1.setDir(nulldir);
-					Sleep(500); //Windows.h ÇÔ¼ö
-					// °æ·Î, À§Ä¡, ÁøÇà¹æÇâ ÃÊ±âÈ­ ÈÄ 0.5ÃÊ Á¤Áö
+					Sleep(500); //Windows.h í•¨ìˆ˜
+					// ê²½ë¡œ, ìœ„ì¹˜, ì§„í–‰ë°©í–¥ ì´ˆê¸°í™” í›„ 0.5ì´ˆ ì •ì§€
 				}
 
 			}
 			if (Zombies[i].is_on(PATH))
 			{
-				(life>0) ? life-- : life = 0;  // ¸ñ¼û °¨¼Ò
+				(life>0) ? life-- : life = 0;  // ëª©ìˆ¨ ê°ì†Œ
 				if (life == 0)
 					GameOver = true;
 				else {
 					Path.empty();
 					P1.setPos(GRID_WIDTH / 2, GRID_HEIGHT / 2);
 					P1.setDir(nulldir);
-					Sleep(500); // Windows.h ÇÔ¼ö
-					// °æ·Î, À§Ä¡, ÁøÇà¹æÇâ ÃÊ±âÈ­ ÈÄ 0.5ÃÊ Á¤Áö
+					Sleep(500); // Windows.h í•¨ìˆ˜
+					// ê²½ë¡œ, ìœ„ì¹˜, ì§„í–‰ë°©í–¥ ì´ˆê¸°í™” í›„ 0.5ì´ˆ ì •ì§€
 				}
 			}
 			if (Zombies[i].is_on(TERRITORY))
