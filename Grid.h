@@ -6,11 +6,11 @@
 using namespace std;
 
 #ifndef GRID_WIDTH
-#define GRID_WIDTH 50		
+#define GRID_WIDTH 30		
 #endif
 
 #ifndef GRID_HEIGHT
-#define GRID_HEIGHT 50		
+#define GRID_HEIGHT 30		
 #endif
 
 

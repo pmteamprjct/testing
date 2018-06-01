@@ -2,59 +2,97 @@
 #include <algorithm>
 
 
-Grid RiskFloodBoard;
-
-
-
 Zombie::Zombie(int x, int y, float r, float g, float b) : Character(x, y, r, g, b)
 {
 
 }
 
-
-void Zombie::setDir(int di)
+bool Zombie::setDir(int di)
 {
-	if (is_backward(di))
+	if (is_blocked(di))
 	{
 		dir = nulldir;
-		return;
+		return false;
 	}
 	else
 	{
 		dir = di;
-		return;
+		return true;
 	}
 
 }
+
+bool Zombie::is_blocked(int x, int y)
+{
+	if (Territory.isGrid(x, y) || x <= 0 || y <= 0 || x >= GRID_WIDTH || y >= GRID_HEIGHT)
+		return true;
+	return false;
+}
+bool Zombie::is_blocked(int i)
+{
+	if (is_out_of_bound(i))
+		return true;
+	switch (i)
+	{
+	case NORTH:
+		if (Territory.isGrid(x, y + 1))
+			return true;
+		return false;
+	case SOUTH:
+		if (Territory.isGrid(x, y - 1))
+			return true;
+		return false;
+	case WEST:
+		if (Territory.isGrid(x - 1, y))
+			return true;
+		return false;
+	case EAST:
+		if (Territory.isGrid(x + 1, y))
+			return true;
+		return false;
+	}
+}
+
+bool is_exist(int x, int y)
+{
+	for (int i = 0; i < Zombies.size(); i++)
+	{
+		if (x == Zombies[i].getX() && y == Zombies[i].getY())
+			return true;
+	}
+	return false;
+}
+
+
 
 
 
 void Zombie::ZombieMoveCloser()
 {
-	if (!is_blocked(NORTH) && is_closed(P1, NORTH))
-		setDir(NORTH);
-	else if (!is_blocked(SOUTH) && is_closed(P1, SOUTH))
-		setDir(SOUTH);
-	else if (!is_blocked(EAST) && is_closed(P1, EAST))
-		setDir(EAST);
-	else if (!is_blocked(WEST) && is_closed(P1, WEST))
-		setDir(WEST);
-	else
-		setDir(nulldir);
+	bool is_dir_selected = false;
+	if (!is_dir_selected && is_closer_to(P1, NORTH))
+		is_dir_selected = setDir(NORTH);
+	if (!is_dir_selected && is_closer_to(P1, SOUTH))
+		is_dir_selected = setDir(SOUTH);
+	if (!is_dir_selected && is_closer_to(P1, EAST))
+		is_dir_selected = setDir(EAST);
+	if (!is_dir_selected && is_closer_to(P1, WEST))
+		is_dir_selected = setDir(WEST);
 }
+
+
 
 void Zombie::ZombieMoveCloser(int X, int Y)
 {
-	if (!is_blocked(NORTH) && y<Y)
-		setDir(NORTH);
-	else if (!is_blocked(SOUTH) && y>Y)
-		setDir(SOUTH);
-	else if (!is_blocked(EAST) && x<X)
-		setDir(EAST);
-	else if (!is_blocked(WEST) && x>X)
-		setDir(WEST);
-	else
-		setDir(nulldir);
+	bool is_dir_selected = false;
+	if (!is_dir_selected && y<Y)
+		is_dir_selected = setDir(NORTH);
+	if (!is_dir_selected && y>Y)
+		is_dir_selected = setDir(SOUTH);
+	if (!is_dir_selected && x<X)
+		is_dir_selected = setDir(EAST);
+	if (!is_dir_selected && x>X)
+		is_dir_selected =setDir(WEST);
 }
 
 void Zombie::ZombieMoveAwayFrom(Character& P)
@@ -69,8 +107,6 @@ void Zombie::ZombieMoveAwayFrom(Character& P)
 		setDir(WEST);
 	else
 		setDir(nulldir);
-
-
 }
 
 
@@ -101,29 +137,7 @@ void Zombie::ZombieCheckRisk()//자기 자신이 얼마나 위험한지를 체크하는 함수.
 }
 
 
-int Zombie::RiskCheckFlood(int x, int y, int dist)//Flooding을 통한 BR에서의 최단탈출시간 Check 함수.
-{
-	bool Way[4] = { false };
-	int Min_checker = -1;
-	if (!P1.is_inBR(x, y))
-		return dist;
-	//4방향 체크
-	if (!RiskFloodBoard.isGrid(x, y + 1) && !is_blocked(x, y + 1))
-		Way[0] = true;
-	if (!RiskFloodBoard.isGrid(x, y - 1) && !is_blocked(x, y - 1))
-		Way[1] = true;
-	if (!RiskFloodBoard.isGrid(x + 1, y) && !is_blocked(x + 1, y))
-		Way[2] = true;
-	if (!RiskFloodBoard.isGrid(x - 1 , y) && !is_blocked(x - 1, y))
-		Way[3] = true;
 
-	return 0;
-}
-
-int Zombie::getRisk()
-{
-	return risk;
-}
 
 
 void Zombie::ZombiePathFinder()//Path를 찾는 모드
@@ -136,22 +150,87 @@ void Zombie::ZombiePathFinder()//Path를 찾는 모드
 	int k2 = min(GRID_HEIGHT - 1, y + ZOMBIE_CLOSE);
 	int X = -1;
 	int Y = -1;
-	int dis = 999;
+	opp = 0;
+	dis = 999;
 	for (i1 = 0; i1 <= GRID_WIDTH - 1; i1++)
 	{
 		for (i2 = 0; i2 <= GRID_HEIGHT - 1; i2++)
 		{
 			//존재하는 Path들 중 거리가 가장 가까운 것을 찾는다.
-			if (Path.isGrid(i1, i2) && distance(i1, i2)<dis)
-			{
-				X = i1;
-				Y = i2;
-				dis = distance(i1, i2);
+			if (Path.isGrid(i1, i2)) {
+				opp++;
+				if(distance(i1, i2) < dis)
+				{
+					X = i1;
+					Y = i2;
+					dis = distance(i1, i2);
+				}
 			}
 		}
 	}
-	if (X != -1 && Y != -1)
-		ZombieMoveCloser(X, Y);//가장 가까운 위치의 Path로 달린다.
+	closestX = X;
+	closestY = Y;
+	opp -= dis / 2;
+}
+
+void Zombie::ZombiePathAttack() {
+	if (closestX != -1 && closestY != -1)
+		ZombieMoveCloser(closestX, closestY);//가장 가까운 위치의 Path로 달린다.
 	else
 		ZombieMoveCloser();
 }
+
+void Zombie::update_Zombie_pos()
+{
+	Zombie_position.setPoint(x, y, true);
+}
+//Grid Zombie_pos를 업데이트하는 함수
+
+
+int Zombie::getRisk()
+{
+	return risk;
+}
+
+int Zombie::getDist() {
+	return dis;
+}
+
+int Zombie::getOpp() {
+	return opp;
+}
+
+
+void Zombie::Zombie_Think()
+{
+	int k = Zombies.size();
+	ZombieCheckRisk();
+	ZombiePathFinder();
+
+	if (dis < 6 || opp >= 5) {
+		ZombiePathAttack();
+		return;
+	}
+	else if (getRisk() < 30)
+	{
+		ZombiePathAttack();
+		for (int j = 0; j < k; j++)
+		{
+			if (&Zombies[j] == this)
+				continue;
+			if (distance(Zombies[j]) < 7)
+			{
+				ZombieMoveAwayFrom(Zombies[j]);
+				break;
+			}
+		}
+	}
+	else
+	{
+		ZombieMoveOutFromBR();
+	}
+
+}
+
+
+
